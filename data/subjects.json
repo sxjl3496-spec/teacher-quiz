@@ -1,0 +1,42 @@
+{
+  "site": {
+    "title": "高校教师资格证刷题站",
+    "owner": "冯泽宇",
+    "exam_date": "2026-10-25",
+    "exam_venue": "湖南师范大学",
+    "exam_note": "全省高校教师岗前培训考试（纸质卷）",
+    "skill_deadline": "2026-10-26",
+    "pass_line": 60,
+    "created": "2026-10-11"
+  },
+  "subjects": [
+    {
+      "key": "education",
+      "name": "高等教育学",
+      "file": "data/education.json",
+      "session": "8:00-9:50（110分钟）",
+      "mode": "闭卷"
+    },
+    {
+      "key": "psychology",
+      "name": "高等教育心理学",
+      "file": "data/psychology.json",
+      "session": "10:10-12:00（110分钟）",
+      "mode": "闭卷"
+    },
+    {
+      "key": "ethics",
+      "name": "高校教师职业道德修养",
+      "file": "data/ethics.json",
+      "session": "14:00-15:40（100分钟）",
+      "mode": "开卷"
+    },
+    {
+      "key": "law",
+      "name": "高等教育法规概论",
+      "file": "data/law.json",
+      "session": "16:00-17:40（100分钟）",
+      "mode": "开卷"
+    }
+  ]
+}
