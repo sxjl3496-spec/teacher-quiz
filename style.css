@@ -1,0 +1,175 @@
+/* 高校教师资格证刷题站 —— 深墨底 + 琥珀强调，专为长时间刷题的护眼与高对比而设 */
+:root{
+  --ink:#12161c; --ink2:#1a2029; --ink3:#232b36;
+  --line:#2f3947; --fg:#e8ecf2; --fg2:#a8b3c2; --fg3:#6f7c8d;
+  --amber:#f0b429; --amber2:#ffd166;
+  --good:#4cc38a; --bad:#ef6a6a; --info:#5aa9e6;
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--ink); color:var(--fg);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  font-size:15px; line-height:1.65; min-height:100vh;
+  display:flex; flex-direction:column;
+}
+
+/* ---------- 顶栏：倒计时常驻 ---------- */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:12px 20px; background:var(--ink2); border-bottom:1px solid var(--line);
+  flex-wrap:wrap;
+}
+.brand{font-size:17px; font-weight:700; letter-spacing:.5px}
+.countdown{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--fg2)}
+.cd-box{
+  display:flex; align-items:baseline; gap:5px;
+  background:var(--ink3); border:1px solid var(--line);
+  padding:4px 10px; border-radius:var(--r);
+}
+.cd-box b{font-size:15px; font-weight:700; color:var(--fg); font-variant-numeric:tabular-nums}
+.cd-box i{font-style:normal; color:var(--fg3); font-size:12px}
+.cd-box.big b{font-size:20px; color:var(--amber); min-width:40px; text-align:center}
+.cd-sep{color:var(--fg3)}
+
+/* ---------- 标签导航 ---------- */
+.tabs{
+  display:flex; gap:6px; padding:10px 20px; overflow-x:auto;
+  background:var(--ink2); border-bottom:1px solid var(--line);
+  position:sticky; top:0; z-index:20;
+}
+.tabs button{
+  background:transparent; color:var(--fg2); border:1px solid transparent;
+  padding:7px 15px; border-radius:var(--r); cursor:pointer;
+  font-size:14px; white-space:nowrap; font-family:inherit;
+  transition:.15s;
+}
+.tabs button:hover{background:var(--ink3); color:var(--fg)}
+.tabs button.on{background:var(--amber); color:#12161c; font-weight:700; border-color:var(--amber)}
+
+/* ---------- 主体 ---------- */
+#main{flex:1; width:100%; max-width:1080px; margin:0 auto; padding:22px 20px 40px}
+h2{font-size:19px; margin-bottom:14px; letter-spacing:.5px}
+h3{font-size:16px; margin:18px 0 10px; color:var(--amber2)}
+.muted{color:var(--fg3); font-size:13px}
+.card{
+  background:var(--ink2); border:1px solid var(--line);
+  border-radius:var(--r); padding:18px; margin-bottom:16px;
+}
+.grid{display:grid; gap:14px}
+.g4{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.g3{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+.g2{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+
+/* 科目卡 */
+.subj{cursor:pointer; transition:.15s; position:relative; overflow:hidden}
+.subj:hover{border-color:var(--amber); transform:translateY(-2px)}
+.subj .nm{font-size:16px; font-weight:700; margin-bottom:6px}
+.subj .mt{font-size:12.5px; color:var(--fg3); line-height:1.8}
+.badge{
+  display:inline-block; font-size:11.5px; padding:1px 7px;
+  border-radius:99px; border:1px solid var(--line); color:var(--fg2);
+}
+.badge.close{background:#3a2a1a; color:var(--amber2); border-color:#5a4526}
+.badge.open{background:#16343a; color:#7fd6e8; border-color:#1e4a52}
+.bar{height:7px; background:var(--ink3); border-radius:99px; overflow:hidden; margin-top:10px}
+.bar i{display:block; height:100%; background:var(--amber); border-radius:99px}
+.bar i.g{background:var(--good)}
+
+/* 按钮 */
+button.btn{
+  background:var(--ink3); color:var(--fg); border:1px solid var(--line);
+  padding:9px 18px; border-radius:var(--r); cursor:pointer;
+  font-size:14.5px; font-family:inherit; transition:.15s;
+}
+button.btn:hover{border-color:var(--amber); color:var(--amber2)}
+button.btn.primary{background:var(--amber); color:#12161c; font-weight:700; border-color:var(--amber)}
+button.btn.primary:hover{background:var(--amber2); color:#12161c}
+button.btn.danger{border-color:#5a2f2f; color:var(--bad)}
+button.btn.danger:hover{background:#2a1a1a; color:var(--bad); border-color:var(--bad)}
+button.btn.sm{padding:5px 11px; font-size:13px}
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+.spread{justify-content:space-between}
+select,input[type=text],input[type=number],textarea{
+  background:var(--ink3); color:var(--fg); border:1px solid var(--line);
+  padding:8px 11px; border-radius:var(--r); font-family:inherit; font-size:14.5px;
+}
+select:focus,input:focus,textarea:focus{outline:none; border-color:var(--amber)}
+textarea{width:100%; min-height:80px; resize:vertical; line-height:1.6}
+
+/* 题目 */
+.qhead{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px}
+.qno{font-size:13px; color:var(--fg3)}
+.tag{font-size:11.5px; padding:1px 8px; border-radius:99px; background:var(--ink3); border:1px solid var(--line); color:var(--fg2)}
+.qstem{font-size:16.5px; line-height:1.85; margin-bottom:14px}
+.qstem .num{color:var(--amber); font-weight:700; margin-right:4px}
+.opt{
+  display:flex; gap:11px; align-items:flex-start; padding:11px 14px;
+  border:1px solid var(--line); border-radius:var(--r);
+  margin-bottom:9px; cursor:pointer; transition:.12s; background:var(--ink2);
+}
+.opt:hover{border-color:var(--fg3); background:var(--ink3)}
+.opt .k{font-weight:700; color:var(--amber2); min-width:20px}
+.opt.sel{border-color:var(--info); background:#152230}
+.opt.right{border-color:var(--good); background:#12261e}
+.opt.wrong{border-color:var(--bad); background:#2a1717}
+.opt.dis{cursor:default; opacity:.95}
+.opt.dis:hover{border-color:inherit}
+.verdict{padding:11px 14px; border-radius:var(--r); margin-top:12px; font-size:14.5px}
+.verdict.ok{background:#12261e; border:1px solid #2c6b52; color:#9ff0cd}
+.verdict.no{background:#2a1717; border:1px solid #7a3a3a; color:#ffb8b8}
+.verdict b{display:block; margin-bottom:4px}
+.exp{margin-top:9px; padding:9px 13px; background:var(--ink3); border-left:3px solid var(--amber); border-radius:0 var(--r) var(--r) 0; font-size:14px; color:var(--fg2)}
+
+/* 统计数字 */
+.stat{background:var(--ink2); border:1px solid var(--line); border-radius:var(--r); padding:14px}
+.stat .v{font-size:26px; font-weight:700; color:var(--amber); font-variant-numeric:tabular-nums; line-height:1.3}
+.stat .k{font-size:12.5px; color:var(--fg3)}
+.stat.g .v{color:var(--good)}
+.stat.b .v{color:var(--bad)}
+.stat.i .v{color:var(--info)}
+
+table{width:100%; border-collapse:collapse; font-size:14px}
+th,td{padding:8px 10px; text-align:left; border-bottom:1px solid var(--line)}
+th{color:var(--fg3); font-weight:600; font-size:12.5px; letter-spacing:.4px}
+tr:last-child td{border-bottom:none}
+td.num{text-align:right; font-variant-numeric:tabular-nums}
+
+.empty{text-align:center; padding:34px 14px; color:var(--fg3)}
+.empty .ico{font-size:34px; display:block; margin-bottom:8px}
+
+/* 模拟考 */
+.exambanner{
+  display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+  background:var(--ink3); border:1px solid var(--amber); border-radius:var(--r);
+  padding:11px 16px; margin-bottom:15px;
+}
+.exambanner .t{font-size:22px; font-weight:700; color:var(--amber); font-variant-numeric:tabular-nums}
+.pager{display:flex; gap:6px; flex-wrap:wrap; margin-top:14px}
+.pager button{
+  width:36px; height:34px; background:var(--ink3); color:var(--fg2);
+  border:1px solid var(--line); border-radius:7px; cursor:pointer; font-size:13px;
+}
+.pager button.on{background:var(--amber); color:#12161c; font-weight:700; border-color:var(--amber)}
+.pager button.done{border-color:var(--good); color:var(--good)}
+
+.note{
+  background:#1e1b12; border:1px solid #4a3c1a; color:#e8d79a;
+  padding:11px 14px; border-radius:var(--r); font-size:13.5px; line-height:1.7;
+}
+.note b{color:var(--amber2)}
+
+.foot{padding:16px 20px 26px; text-align:center; color:var(--fg3); font-size:12.5px; border-top:1px solid var(--line)}
+
+.chip{display:inline-flex; align-items:center; gap:5px; background:var(--ink3); border:1px solid var(--line); padding:3px 10px; border-radius:99px; font-size:13px}
+.chip b{color:var(--amber); font-variant-numeric:tabular-nums}
+
+@media (max-width:640px){
+  body{font-size:14.5px}
+  .topbar{padding:10px 13px}
+  .brand{font-size:15.5px}
+  #main{padding:16px 13px 32px}
+  .qstem{font-size:15.5px}
+  .cd-box.big b{font-size:17px}
+}
