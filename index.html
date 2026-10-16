@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高校教师资格证刷题站</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">📚 高校教师资格证刷题站</div>
+  <div class="countdown" id="countdown">
+    <span class="cd-box"><b id="todayDate">--</b><i>今天</i></span>
+    <span class="cd-sep">→</span>
+    <span class="cd-box"><b id="examDate">----/--/--</b><i>考试日</i></span>
+    <span class="cd-sep">·</span>
+    <span class="cd-box big"><b id="daysLeft">--</b><i>剩余天数</i></span>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-view="home" class="on">首页</button>
+  <button data-view="practice">练习</button>
+  <button data-view="exam">模拟考试</button>
+  <button data-view="wrong">错题集</button>
+  <button data-view="boost">错题强化</button>
+  <button data-view="stats">统计分析</button>
+  <button data-view="manage">题库管理</button>
+</nav>
+
+<main id="main"></main>
+
+<footer class="foot">
+  <p id="footNote">数据保存在本浏览器（localStorage），换浏览器/清缓存会丢失。可通过「题库管理」导出备份。</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
