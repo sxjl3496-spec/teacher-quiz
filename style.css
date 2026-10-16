@@ -173,3 +173,10 @@ td.num{text-align:right; font-variant-numeric:tabular-nums}
   .qstem{font-size:15.5px}
   .cd-box.big b{font-size:17px}
 }
+
+/* 存储失败警示条：只有出问题时才显示 */
+.notice{
+  background:#3a2222; border:1px solid #6b3030; color:#ffb4b4;
+  padding:10px 14px; border-radius:10px; margin:10px 0; font-size:13.5px; line-height:1.6;
+}
+.notice b{color:#ffd9d9}
