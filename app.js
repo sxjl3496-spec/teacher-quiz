@@ -85,13 +85,15 @@ function daysBetween(a, b) {
 }
 function tickToday() {
   const now = new Date();
-  const [Y, M, D] = (META ? META.site.exam_date : '2026-10-25').split('-').map(Number);
+  const [Y, M, D] = ((META && META.site.exam_date) || '2026-10-25').split('-').map(Number);
   const exam = new Date(Y, M - 1, D);
-  $('#todayDate').textContent = now.getFullYear() + '/' + pad(now.getMonth() + 1) + '/' + pad(now.getDate());
-  $('#examDate').textContent = Y + '/' + pad(M) + '/' + pad(D);
+  setText('#todayDate', now.getFullYear() + '/' + pad(now.getMonth() + 1) + '/' + pad(now.getDate()));
+  setText('#examDate', Y + '/' + pad(M) + '/' + pad(D));
   const d = daysBetween(exam, now);
-  $('#daysLeft').textContent = d > 0 ? d : (d === 0 ? 'D日' : '已过');
+  setText('#cdLeft', d > 0 ? d : (d === 0 ? '今天' : '已过'));
+  const t = $('#cdTag'); if (t) t.textContent = d > 0 ? '天后考试' : (d === 0 ? '今天考试' : '考试已结束');
 }
+function setText(sel, txt) { const e = $(sel); if (e) e.textContent = txt; }
 const pad = n => String(n).padStart(2, '0');
 
 /* ---------------- 导航 ---------------- */
