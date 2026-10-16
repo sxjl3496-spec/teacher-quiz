@@ -32,7 +32,14 @@ function loadState() {
   catch (e) { return blankState(); }
 }
 function saveState() {
-  localStorage.setItem(LS.state, JSON.stringify(S));
+  try {
+    localStorage.setItem(LS.state, JSON.stringify(S));
+  } catch (e) {
+    // 存储配额满 / 隐私模式：不能静默吞掉，否则答题记录会无声丢失
+    console.error('localStorage 写入失败', e);
+    const w = $('#saveWarn'); if (w) w.style.display = 'block';
+    return;
+  }
   tickToday();
 }
 function loadCustom() {
@@ -59,11 +66,15 @@ async function init() {
         BANK[s.key] = d.questions || [];
       } catch (e) { BANK[s.key] = []; }
     }
-    // 合并本地自建题
+    // 合并本地自建题（按 id 去重，避免重复导入产生重题）
     const cust = loadCustom();
     for (const c of cust) {
       if (!BANK[c.subject]) BANK[c.subject] = [];
-      BANK[c.subject] = BANK[c.subject].concat(c.questions || []);
+      const seen = new Set(BANK[c.subject].map(x => x.id));
+      for (const q of (c.questions || [])) {
+        if (!q || !q.id || seen.has(q.id)) continue;
+        BANK[c.subject].push(q); seen.add(q.id);
+      }
     }
     SUBJ = META.subjects;
   } catch (e) {
@@ -90,8 +101,7 @@ function tickToday() {
   setText('#todayDate', now.getFullYear() + '/' + pad(now.getMonth() + 1) + '/' + pad(now.getDate()));
   setText('#examDate', Y + '/' + pad(M) + '/' + pad(D));
   const d = daysBetween(exam, now);
-  setText('#cdLeft', d > 0 ? d : (d === 0 ? '今天' : '已过'));
-  const t = $('#cdTag'); if (t) t.textContent = d > 0 ? '天后考试' : (d === 0 ? '今天考试' : '考试已结束');
+  setText('#daysLeft', d > 0 ? d : (d === 0 ? '今天' : '已过'));
 }
 function setText(sel, txt) { const e = $(sel); if (e) e.textContent = txt; }
 const pad = n => String(n).padStart(2, '0');
@@ -176,37 +186,45 @@ function subjStat(key) {
 function officialQs(key) { return (BANK[key] || []).filter(q => !q.ai_answered); }
 function aiCount(key) { return (BANK[key] || []).filter(q => q.ai_answered).length; }
 
-/* 概率算法：Wilson 下界 + 正态近似 P(真实正确率 ≥ 及格线)
-   说明：无历史真考成绩，用本人作答的正确率估计水平，取单侧置信下界保守估算。 */
+/* 概率算法：拉普拉斯平滑 + 单侧 95% 正态近似 P(真实正确率 ≥ 及格线)
+   口径：无历史真考成绩可回归，用本人作答正确率估计水平，取单侧置信下界保守估算。
+   注意：这不是 Wilson 下界公式，是「Laplace 平滑 + 正态近似」，界面已如实标注。 */
 function zScore(p) { // 标准正态 CDF 近似
   const t = 1 / (1 + 0.2316419 * Math.abs(p));
   const d = 0.3989423 * Math.exp(-p * p / 2);
   let pr = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
   return p > 0 ? 1 - pr : pr;
 }
+function coverDisc(cover) { return 0.55 + 0.45 * Math.min(1, cover / 0.5); }
 function probOf(key) {
   const qs = officialQs(key);
   const n = qs.length;
-  if (!n) return { ready: false, p: 0, done: 0, acc: 0, cover: 0 };
+  if (!n) return { ready: false, p: 0, pRaw: 0, done: 0, acc: 0, cover: 0 };
   let right = 0, done = 0;
   for (const q of qs) { const a = S.answers[q.id]; if (a) { done++; if (a.ok) right++; } }
   const cover = done / n;
-  if (done < 5) return { ready: false, p: 0.5, done, acc: 0, cover };  // 样本不足给先验
+  if (done < 5) return { ready: false, p: 0.5, pRaw: 0.5, done, acc: 0, cover };
   // Laplace 平滑
   const phat = (right + 1) / (done + 2);
   const se = Math.sqrt(Math.max(phat * (1 - phat), 1e-6) / (done + 2));
   const target = PASS_LINE / 100;
   const z = (phat - target) / se;
-  const p = zScore(z);
+  const pRaw = zScore(z);                                  // 未打折的单科概率
   // 覆盖率折扣：刷得越少，越可能没见过的题更难
-  const pAdj = p * (0.55 + 0.45 * Math.min(1, cover / 0.5));
-  return { ready: true, p: Math.max(0, Math.min(1, pAdj)), done, acc: done ? right / done : 0, cover, phat };
+  const pAdj = pRaw * coverDisc(cover);
+  return { ready: true, p: Math.max(0, Math.min(1, pAdj)), pRaw,
+           done, acc: done ? right / done : 0, cover, phat };
 }
 function totalProb() {
   if (!SUBJ.length) return 0;
-  let m = 1;
-  for (const s of SUBJ) m *= probOf(s.key).p;
-  return m;
+  // 各科「未打折」概率连乘，覆盖率折扣只施加一次（用平均覆盖率）
+  // ——若按科连乘，折扣会被复利四次，把概率指数级压低，严重失真
+  let m = 1, covSum = 0, cnt = 0;
+  for (const s of SUBJ) {
+    const r = probOf(s.key);
+    m *= r.pRaw; covSum += r.cover; cnt++;
+  }
+  return Math.max(0, Math.min(1, m * coverDisc(cnt ? covSum / cnt : 0)));
 }
 function probCards() {
   let h = '<div class="grid g4">';
@@ -821,10 +839,23 @@ function importData(inp) {
   r.onload = () => {
     try {
       const j = JSON.parse(r.result);
-      if (j.state) { S = Object.assign(blankState(), j.state); saveState(); }
-      if (j.custom) { saveCustom(j.custom); }
+      if (j === null || typeof j !== 'object' || Array.isArray(j)) throw new Error('顶层必须是对象');
+      if (j.state !== undefined) {
+        if (j.state === null || typeof j.state !== 'object' || Array.isArray(j.state))
+          throw new Error('state 字段类型不对');
+        // 只接受白名单字段，避免畸形文件污染状态导致白屏
+        const base = blankState();
+        for (const k of Object.keys(base)) {
+          if (j.state[k] !== undefined && typeof j.state[k] === typeof base[k]) base[k] = j.state[k];
+        }
+        S = base; saveState();
+      }
+      if (j.custom !== undefined) {
+        if (!Array.isArray(j.custom)) throw new Error('custom 必须是数组');
+        saveCustom(j.custom.filter(c => c && typeof c.subject === 'string' && Array.isArray(c.questions)));
+      }
       alert('导入成功，正在刷新…'); location.reload();
-    } catch (e) { alert('文件解析失败：' + e.message); }
+    } catch (e) { alert('导入失败：' + e.message); }
   };
   r.readAsText(f);
 }
